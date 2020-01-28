@@ -41,9 +41,6 @@ class MainActivity : AppCompatActivity() {
         etCurrentPassword.addTextChangedListener(object: TextWatcher {
             override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 text?.let { text ->
-                    if(text.isEmpty()) {
-                        return@let
-                    }
                     encryptedData = encryptPassword(text.toString(), keySpec, ivSpec)
                     decryptedData = decryptPassword(keySpec, ivSpec)
                     tvEncryptedPassword.text = encryptedData
