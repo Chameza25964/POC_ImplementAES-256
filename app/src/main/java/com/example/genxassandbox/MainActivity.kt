@@ -2,6 +2,8 @@ package com.example.genxassandbox
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Base64
 import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.Exception
@@ -36,16 +38,21 @@ class MainActivity : AppCompatActivity() {
         ivRandom.nextBytes(initializeVectors)
         val ivSpec = IvParameterSpec(initializeVectors)
 
-        tvStartEncrypts.setOnClickListener {
-            if (etCurrentPassword.text.isEmpty()) {
-                return@setOnClickListener
+        etCurrentPassword.addTextChangedListener(object: TextWatcher {
+            override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                text?.let { text ->
+                    if(text.isEmpty()) {
+                        return@let
+                    }
+                    encryptedData = encryptPassword(text.toString(), keySpec, ivSpec)
+                    decryptedData = decryptPassword(keySpec, ivSpec)
+                    tvEncryptedPassword.text = encryptedData
+                    tvDecryptedPassword.text = decryptedData
+                }
             }
-            val password = etCurrentPassword.text.toString()
-            encryptedData = encryptPassword(password, keySpec, ivSpec)
-            decryptedData = decryptPassword(keySpec, ivSpec)
-            tvEncryptedPassword.text = encryptedData
-            tvDecryptedPassword.text = decryptedData
-        }
+            override fun afterTextChanged(p0: Editable?) {}
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+        })
     }
 
     fun encryptPassword(password: String, keySpec: Key, ivSpec: IvParameterSpec): String {
